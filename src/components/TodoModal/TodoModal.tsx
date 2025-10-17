@@ -23,15 +23,23 @@ export const TodoModal: React.FC<Props> = ({ todo, onClose }) => {
       setLoadingUser(true);
       try {
         const data = await getUser(todo.userId);
-        if (active) setUser(data);
+
+        if (active) {
+          setUser(data);
+        }
       } catch (e) {
-        if (active) setUserError((e as Error).message || 'Failed to load user');
+        if (active) {
+          setUserError((e as Error).message || 'Failed to load user');
+        }
       } finally {
-        if (active) setLoadingUser(false);
+        if (active) {
+          setLoadingUser(false);
+        }
       }
     };
 
     loadUser();
+
     return () => {
       active = false;
     };
@@ -39,19 +47,31 @@ export const TodoModal: React.FC<Props> = ({ todo, onClose }) => {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
+
     window.addEventListener('keydown', onKeyDown);
+
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
   return (
-    <div className="modal is-active" data-cy="modal" aria-modal="true" role="dialog">
+    <div
+      className="modal is-active"
+      data-cy="modal"
+      aria-modal="true"
+      role="dialog"
+    >
       <div className="modal-background" onClick={onClose} />
 
       <div className="modal-card">
         <header className="modal-card-head">
-          <div className="modal-card-title has-text-weight-medium" data-cy="modal-header">
+          <div
+            className="modal-card-title has-text-weight-medium"
+            data-cy="modal-header"
+          >
             {`Todo #${todo.id}`}
           </div>
 
@@ -80,7 +100,11 @@ export const TodoModal: React.FC<Props> = ({ todo, onClose }) => {
               </p>
 
               <p className="block" data-cy="modal-user">
-                <strong className={todo.completed ? 'has-text-success' : 'has-text-danger'}>
+                <strong
+                  className={
+                    todo.completed ? 'has-text-success' : 'has-text-danger'
+                  }
+                >
                   {todo.completed ? 'Done' : 'Planned'}
                 </strong>
                 {' by '}
@@ -91,7 +115,9 @@ export const TodoModal: React.FC<Props> = ({ todo, onClose }) => {
         </section>
 
         <footer className="modal-card-foot is-justify-content-flex-end">
-          <button type="button" className="button" onClick={onClose}>Close</button>
+          <button type="button" className="button" onClick={onClose}>
+            Close
+          </button>
         </footer>
       </div>
     </div>

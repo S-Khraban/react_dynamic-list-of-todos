@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import cn from 'classnames';
@@ -12,7 +12,8 @@ import { Loader } from './components/Loader';
 import { getTodos } from './api';
 import type { Todo } from './types/Todo';
 
-type Filter = 'all' | 'completed' | 'active';
+export const FILTERS = ['all', 'completed', 'active'] as const;
+type Filter = typeof FILTERS[number];
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -22,14 +23,14 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
 
-  const handleSelectTodo = (id: number | null) => {
+  const handleSelectTodo = useCallback((id: number | null) => {
     setSelectedId(prev => (prev === id ? null : id));
-  };
+  }, []);
 
-  const handleChangeFilter = (next: Filter) => {
+  const handleChangeFilter = useCallback((next: Filter) => {
     setFilter(next);
     setSelectedId(null);
-  };
+  }, []);
 
   const handleLoadTodos = async () => {
     try {
@@ -38,7 +39,8 @@ export const App: React.FC = () => {
       const data = await getTodos();
       setTodos(data);
     } catch (e) {
-      setError((e as Error).message || 'Failed to load todos');
+      const message = e instanceof Error ? e.message : 'Failed to load todos';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -50,15 +52,23 @@ export const App: React.FC = () => {
 
   const normalizedQuery = query.trim().toLowerCase();
 
-  const filteredTodos = todos.filter(t => {
-    const matchesStatus =
-      filter === 'all' ? true : filter === 'completed' ? t.completed : !t.completed;
-    const matchesQuery = t.title.toLowerCase().includes(normalizedQuery);
-    return matchesStatus && matchesQuery;
-  });
+  const matchesStatus = (t: Todo, current: Filter) => {
+    if (current === 'all') return true;
+    if (current === 'completed') return t.completed;
+    return !t.completed;
+  };
+
+  const matchesQuery = (t: Todo, q: string) =>
+    t.title.toLowerCase().includes(q);
+
+  const filteredTodos = todos.filter(
+    t => matchesStatus(t, filter) && matchesQuery(t, normalizedQuery),
+  );
 
   const selectedTodo =
-    selectedId == null ? null : filteredTodos.find(t => t.id === selectedId) ?? null;
+    selectedId == null
+      ? null
+      : (filteredTodos.find(t => t.id === selectedId) ?? null);
 
   return (
     <>
@@ -111,10 +121,7 @@ export const App: React.FC = () => {
       </div>
 
       {selectedTodo && (
-        <TodoModal
-          todo={selectedTodo}
-          onClose={() => setSelectedId(null)}
-        />
+        <TodoModal todo={selectedTodo} onClose={() => setSelectedId(null)} />
       )}
     </>
   );

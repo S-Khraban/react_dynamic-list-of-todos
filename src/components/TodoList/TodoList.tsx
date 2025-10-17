@@ -67,7 +67,9 @@ export const TodoList: React.FC<Props> = ({ todos, selectedId, onSelect }) => {
                   onClick={() => handleToggleSelect(todo.id)}
                 >
                   <span className="icon">
-                    <i className={`far ${isSelected ? 'fa-eye-slash' : 'fa-eye'}`} />
+                    <i
+                      className={`far ${isSelected ? 'fa-eye-slash' : 'fa-eye'}`}
+                    />
                   </span>
                 </button>
               </td>
