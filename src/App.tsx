@@ -11,16 +11,14 @@ import { Loader } from './components/Loader';
 
 import { getTodos } from './api';
 import type { Todo } from './types/Todo';
-
-export const FILTERS = ['all', 'completed', 'active'] as const;
-type Filter = typeof FILTERS[number];
+import { Filter } from './types/Filter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [query, setQuery] = useState('');
 
   const handleSelectTodo = useCallback((id: number | null) => {
@@ -47,28 +45,28 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    void handleLoadTodos();
+    handleLoadTodos();
   }, []);
 
   const normalizedQuery = query.trim().toLowerCase();
 
-  const matchesStatus = (t: Todo, current: Filter) => {
-    if (current === 'all') return true;
-    if (current === 'completed') return t.completed;
+  const isStatusMatch = (t: Todo, current: Filter) => {
+    if (current === Filter.All) return true;
+    if (current === Filter.Completed) return t.completed;
     return !t.completed;
   };
 
-  const matchesQuery = (t: Todo, q: string) =>
+  const doesTitleMatchQuery = (t: Todo, q: string) =>
     t.title.toLowerCase().includes(q);
 
   const filteredTodos = todos.filter(
-    t => matchesStatus(t, filter) && matchesQuery(t, normalizedQuery),
+    t => isStatusMatch(t, filter) && doesTitleMatchQuery(t, normalizedQuery),
   );
 
   const selectedTodo =
     selectedId == null
       ? null
-      : (filteredTodos.find(t => t.id === selectedId) ?? null);
+      : filteredTodos.find(t => t.id === selectedId) ?? null;
 
   return (
     <>
@@ -77,7 +75,6 @@ export const App: React.FC = () => {
           <div className="box">
             <div className="is-flex is-justify-content-space-between is-align-items-center">
               <h1 className="title">Todos:</h1>
-
               <span className="tag is-link is-light" data-cy="todosCount">
                 {filteredTodos.length}
               </span>

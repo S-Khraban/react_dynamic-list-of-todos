@@ -1,6 +1,6 @@
 import React from 'react';
-
-type Filter = 'all' | 'active' | 'completed';
+import { Filter } from '../../types/Filter';
+import './TodoFilter.scss';
 
 type Props = {
   value: Filter;
@@ -25,9 +25,9 @@ export const TodoFilter: React.FC<Props> = ({
           value={value}
           onChange={e => onChange(e.target.value as Filter)}
         >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="completed">Completed</option>
+          <option value={Filter.All}>All</option>
+          <option value={Filter.Active}>Active</option>
+          <option value={Filter.Completed}>Completed</option>
         </select>
       </span>
     </p>
@@ -47,7 +47,7 @@ export const TodoFilter: React.FC<Props> = ({
       </span>
 
       {query && (
-        <span className="icon is-right" style={{ pointerEvents: 'all' }}>
+        <span className="icon is-right icon--clickable">
           <button
             data-cy="clearSearchButton"
             type="button"
