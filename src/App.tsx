@@ -35,9 +35,11 @@ export const App: React.FC = () => {
       setError(null);
       setLoading(true);
       const data = await getTodos();
+
       setTodos(data);
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to load todos';
+
       setError(message);
     } finally {
       setLoading(false);
@@ -51,8 +53,14 @@ export const App: React.FC = () => {
   const normalizedQuery = query.trim().toLowerCase();
 
   const isStatusMatch = (t: Todo, current: Filter) => {
-    if (current === Filter.All) return true;
-    if (current === Filter.Completed) return t.completed;
+    if (current === Filter.All) {
+      return true;
+    }
+
+    if (current === Filter.Completed) {
+      return t.completed;
+    }
+
     return !t.completed;
   };
 
@@ -66,7 +74,7 @@ export const App: React.FC = () => {
   const selectedTodo =
     selectedId == null
       ? null
-      : filteredTodos.find(t => t.id === selectedId) ?? null;
+      : (filteredTodos.find(t => t.id === selectedId) ?? null);
 
   return (
     <>

@@ -8,7 +8,11 @@ type Props = {
   onToggleSelect: (id: number) => void;
 };
 
-export const TodoRow: React.FC<Props> = ({ todo, isSelected, onToggleSelect }) => {
+export const TodoRow: React.FC<Props> = ({
+  todo,
+  isSelected,
+  onToggleSelect,
+}) => {
   return (
     <tr
       data-cy="todo"

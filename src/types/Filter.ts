@@ -4,8 +4,4 @@ export enum Filter {
   Completed = 'completed',
 }
 
-export const FILTERS = [
-  Filter.All,
-  Filter.Active,
-  Filter.Completed,
-] as const;
+export const FILTERS = [Filter.All, Filter.Active, Filter.Completed] as const;
